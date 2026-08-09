@@ -39,6 +39,25 @@ export const User = new EntitySchema({
 
     password: {
       type: "varchar",
+      length: 255,
+      nullable: true,
+    },
+
+    lga: {
+      type: "varchar",
+      length: 100,
+      nullable: true,
+    },
+
+    city: {
+      type: "varchar",
+      length: 100,
+      nullable: true,
+    },
+
+    addressText: {
+      type: "text",
+      nullable: true,
     },
 
     role: {
@@ -57,36 +76,33 @@ export const User = new EntitySchema({
       nullable: true,
     },
 
-    address: {
+    googleId: {
       type: "varchar",
+      unique: true,
+      sparse: true,
       nullable: true,
     },
 
-    city: {
-      type: "varchar",
-      nullable: true,
-    },
-
-    state: {
-      type: "varchar",
-      nullable: true,
-    },
-
-    country: {
-      type: "varchar",
-      nullable: true,
-    },
 
     isVerified: {
       type: "boolean",
       default: false,
     },
 
-    verificationToken: {
+    profileCompleted: {
+      type: "boolean",
+      default: false,
+    },
+
+    resetPasswordToken: {
       type: "varchar",
       nullable: true,
     },
 
+    resetPasswordExpires: {
+      type: "timestamptz",
+      nullable: true,
+    },
 
     otp: {
       type: "varchar",

@@ -1,7 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import authRoutes from "./modules/auth/auth.route.js";
-//import { errorHandler } from "./middleware/error.middleware.js";
+import { errorHandler } from "./middleware/error.middleware.js";
 //import userRoutes  from "./modules/user/profile.route.js";
 
 
@@ -16,7 +16,7 @@ app.use("/api/auth", authRoutes);
 
 
 
-//app.use(errorHandler)
+app.use(errorHandler)
 
 
 export default app;

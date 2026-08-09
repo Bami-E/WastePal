@@ -4,8 +4,7 @@ import { AppError } from "../../utils/AppError.js";
 const userRepository = AppDataSource.getRepository("User");
 
 export const getProfile = async (userId) => {
-  const user = await userRepository.findOne({
-    where: {
+  const user = await userRepository.findOne({where: {
       id: userId,
     },
     select: {

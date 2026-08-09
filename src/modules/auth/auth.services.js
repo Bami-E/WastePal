@@ -8,6 +8,7 @@ import  { newId } from '../../utils/id.js';
 import { AuthProvider } from "../../types/authprovider.js";
 import { sendTemplateEmail } from "../../utils/email.utils.js";
 import { generateResetToken } from "../../utils/resetPassword.js";
+import { exchangeCodeForGoogleProfile} from "../Googleoauthservices/google.provider.js";
 
 
 
@@ -58,7 +59,7 @@ export const register = async ({ firstName, lastName, email, password, phoneNumb
   
 
 
-  sendTemplateEmail(email, "Email Verification", "signup", {
+  sendTemplateEmail(email, "Email Verification", "register", {
     firstName,
     lastName,
     otp,
@@ -70,7 +71,7 @@ export const register = async ({ firstName, lastName, email, password, phoneNumb
 
 
 
-//email verification
+//function for email verification
 
 export const verifyEmail = async ({ otp }) => {
   const user = await userRepo.findOne({where: { otp },});
@@ -82,7 +83,7 @@ export const verifyEmail = async ({ otp }) => {
     throw new AppError("OTP has expired", 400, "OTP_EXPIRED");
   }
 
-  await userRepo.update({ id: user.id },{isVerified: true,otp: null,otpExpiry: null,});
+  await userRepo.update({ id: user.id },{isVerified: true, otp: null, otpExpiry: null,});
 
   sendTemplateEmail(user.email,"Email Verified Successfully","verify-email",{
       firstName: user.firstName
@@ -95,7 +96,7 @@ export const verifyEmail = async ({ otp }) => {
 };
 
 
-//endpoint for login
+//function for login
 export const login = async ({ email, password }) => {
   const user = await userRepo
   .createQueryBuilder("user")
@@ -130,8 +131,15 @@ export const login = async ({ email, password }) => {
 };
 
 
+// function for logout
+export const logout = async () => {
+  return {
+    message: "Logged out successfully",
+  };
+};
 
 
+// function for forgot password
 export const forgotPassword = async ({ email }) => {
   const user = await userRepo.findOne({
     where: { email },
@@ -148,10 +156,11 @@ export const forgotPassword = async ({ email }) => {
 
   await userRepo.save(user);
 
-  const resetUrl = `http://localhost:5000/api/v1/auth/reset-password/${resetToken}`;
+  const resetUrl = `http://localhost:5000/api/auth/reset-password/${resetToken}`;
 
-  sendTemplateEmail(user.email, "Reset Password", "forgotPassword",{
-    firstName
+  sendTemplateEmail(user.email, "Reset Password", "forgetPassword",{
+    firstName:user.firstName,
+    resetUrl,
   });
 
   return {
@@ -160,8 +169,8 @@ export const forgotPassword = async ({ email }) => {
 };
 
 
-
-export const resetPassword = async ({ token, password }) => {
+// function for reset password
+export const resetPassword = async ({ token, password, confirmPassword }) => {
   const hashedToken = crypto
     .createHash("sha256")
     .update(token)
@@ -181,6 +190,10 @@ export const resetPassword = async ({ token, password }) => {
     throw new AppError("Reset token has expired", 400, "TOKEN_EXPIRED");
   }
 
+  if (password !== confirmPassword) {
+    throw new AppError("Passwords do not match", 400, "PASSWORDS_DO_NOT_MATCH");
+  }
+
   user.password = await bcrypt.hash(password, SALT_ROUNDS);
 
   user.resetPasswordToken = null;
@@ -188,8 +201,8 @@ export const resetPassword = async ({ token, password }) => {
 
   await userRepo.save(user);
 
-  sendTemplateEmail(user.email, "Password reset successufully", "password reset",{
-    firstName
+  sendTemplateEmail(user.email, "Password reset successfully", "passwordreset",{
+    firstName: user.firstName
   });
 
   return {
@@ -201,4 +214,74 @@ export const resetPassword = async ({ token, password }) => {
 export const sanitizeUser = (user) => {
   const { password, otp, verificationToken, ...safeUser } = user;
   return safeUser;
+};
+
+// Google OAuth services
+
+export const authenticateGoogleProfile = async (profile) => {
+  // Check if this Google account already exists
+  let user = await userRepo.findOne({
+    where: {
+      googleId: profile.googleId,
+    },
+  });
+
+  // Google account doesn't exist yet
+  if (!user) {
+    // Check whether the email already belongs to a WastePal account
+    user = await userRepo.findOne({
+      where: {
+        email: profile.email,
+      },
+    });
+
+    if (user) {
+      // Existing local account — link Google to it
+      user.googleId = profile.googleId;
+      user.isVerified = true;
+
+      if (user.authProvider === AuthProvider.LOCAL) {
+        user.authProvider = AuthProvider.HYBRID;
+      }
+
+      if (!user.profilePicture && profile.profilePicture) {
+        user.profilePicture = profile.profilePicture;
+      }
+
+      user = await userRepo.save(user);
+    } else {
+      // Completely new Google user
+      user = await userRepo.save(
+        userRepo.create({
+          id: newId(),
+          email: profile.email,
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          googleId: profile.googleId,
+          profilePicture: profile.profilePicture,
+          authProvider: AuthProvider.GOOGLE,
+          isVerified: true,
+
+          // Google users don't need a local password
+          password: null,
+
+          // Give Google users a default role
+          role: "household",
+        })
+      );
+    }
+  }
+
+  const tokens = issueTokens(user);
+
+  return {
+    user: sanitizeUser(user),
+    ...tokens,
+  };
+};
+
+export const handleGoogleOAuthCallback = async (code) => {
+  const profile = await exchangeCodeForGoogleProfile(code);
+
+  return authenticateGoogleProfile(profile);
 };
