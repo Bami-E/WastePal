@@ -1,5 +1,6 @@
 import { AppDataSource } from "../../config/db.js";
 import { AppError } from "../../utils/AppError.js";
+import { User } from "../../database/entities/user.entities.js"
 
 const userRepository = AppDataSource.getRepository("User");
 
