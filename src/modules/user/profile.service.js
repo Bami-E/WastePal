@@ -58,10 +58,9 @@ export const updateProfile = async (userId, payload) => {
     phoneNumber,
     businessName,
     businessType,
-    address,
+    lga,
     city,
-    state,
-    country,
+    addressText,
   } = payload;
 
   if (phoneNumber && phoneNumber !== user.phoneNumber) {
@@ -100,22 +99,20 @@ export const updateProfile = async (userId, payload) => {
     user.businessType = businessType;
   }
 
-  if (address !== undefined) {
-    user.address = address;
+  if (lga !== undefined) {
+    user.lga = lga;
   }
+
 
   if (city !== undefined) {
     user.city = city;
   }
 
-  if (state !== undefined) {
-    user.state = state;
+  if (addressText !== undefined) {
+    user.addressText = addressText;
   }
 
-  if (country !== undefined) {
-    user.country = country;
-  }
-
+  
   await userRepository.save(user);
 
   return {
@@ -126,10 +123,9 @@ export const updateProfile = async (userId, payload) => {
     phoneNumber: user.phoneNumber,
     businessName: user.businessName,
     businessType: user.businessType,
-    address: user.address,
+    lga: user.lga,
     city: user.city,
-    state: user.state,
-    country: user.country,
+    addressText: user.addressText,
     role: user.role,
     updatedAt: user.updatedAt,
   };

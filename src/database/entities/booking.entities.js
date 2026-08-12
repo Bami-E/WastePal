@@ -1,5 +1,6 @@
 import { EntitySchema } from "typeorm";
 import { BookingStatus, CompletionStatus, ConfirmationStatus } from "../../types/bookingstatus.js";
+import { WasteType } from "../../types/wastetype.js";
 
 export const Booking = new EntitySchema({
   name: "Booking",
@@ -13,8 +14,8 @@ export const Booking = new EntitySchema({
     },
 
     waste_type: {
-      type: "varchar",
-      length: 50,
+      type: "enum",
+      enum: Object.values(WasteType),
       nullable: true,
     },
 

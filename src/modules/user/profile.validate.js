@@ -31,26 +31,15 @@ export const updateProfileSchema = Joi.object({
       .max(100)
       .optional(),
 
-    address: Joi.string()
-      .trim()
-      .max(255)
-      .optional(),
 
-    city: Joi.string()
-      .trim()
-      .max(100)
-      .optional(),
+    lga: Joi.string().trim().max(100).optional(),
 
-    state: Joi.string()
-      .trim()
-      .max(100)
-      .optional(),
+    city: Joi.string().trim().max(100).optional(),
+    
+    addressText: Joi.string().trim().max(255).optional(),
+  
 
-    country: Joi.string()
-      .trim()
-      .max(100)
-      .optional(),
-
+    
     preferredLanguage: Joi.string()
       .trim()
       .max(50)
