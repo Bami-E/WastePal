@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto"
 import jwt from "jsonwebtoken"
-import { User } from "../../Database/entities/user.entities.js"
+import { User } from "../../database/entities/user.entities.js"
 import { AppDataSource } from "../../config/db.js"
 import { AppError } from "../../utils/AppError.js";
 import  { newId } from '../../utils/id.js';

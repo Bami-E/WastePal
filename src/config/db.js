@@ -1,10 +1,9 @@
 import { DataSource } from "typeorm";
 import dotenv  from "dotenv";
 import "reflect-metadata";
-import { User } from "../Database/entities/user.entities.js";
+import { User } from "../database/entities/user.entities.js";
 import { Booking } from "../database/entities/booking.entities.js";
 import { BookingStatusLog } from "../database/entities/booking_status_logs.entities.js";
-
 
 dotenv.config();
 
