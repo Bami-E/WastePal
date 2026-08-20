@@ -21,11 +21,11 @@ export const AppDataSource = new DataSource({
   //   rejectUnauthorized: false,
   // },
 
-  synchronize: true,
+  synchronize: false,
   logging: false,
   entities: [ User, Booking, BookingStatusLog, Payment, Subscription ],
   migrations: [
-    "src/migration/**/*.ts"
+    "src/migration/**/*.js"
   ],
   
 });
