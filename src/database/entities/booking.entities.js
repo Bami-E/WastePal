@@ -20,9 +20,7 @@ export const Booking = new EntitySchema({
     },
 
     quantity: {
-      type: "numeric",
-      precision: 10,
-      scale: 2,
+      type: "integer",
       nullable: true,
     },
 

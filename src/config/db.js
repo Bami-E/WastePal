@@ -4,6 +4,8 @@ import "reflect-metadata";
 import { User } from "../database/entities/user.entities.js";
 import { Booking } from "../database/entities/booking.entities.js";
 import { BookingStatusLog } from "../database/entities/booking_status_logs.entities.js";
+import { Payment } from "../database/entities/payment.entities.js";
+import { Subscription } from "../database/entities/subscription.entities.js";
 
 dotenv.config();
 
@@ -21,7 +23,7 @@ export const AppDataSource = new DataSource({
 
   synchronize: true,
   logging: false,
-  entities: [ User, Booking, BookingStatusLog ],
+  entities: [ User, Booking, BookingStatusLog, Payment, Subscription ],
   migrations: [
     "src/migration/**/*.ts"
   ],

@@ -13,6 +13,7 @@
   "type": "module",
   "dependencies": {
     "@getbrevo/brevo": "^6.0.2",
+    "axios": "^1.19.0",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.10.0",
     "crypto": "^1.0.1",
